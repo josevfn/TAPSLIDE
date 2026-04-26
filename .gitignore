@@ -1,0 +1,15 @@
+.gradle/
+build/
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
+*.iml
+.idea/
+out/
+dist/
+*.zip
+*.exe
+
