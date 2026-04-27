@@ -15,7 +15,7 @@ Modo mais estável para apresentações. Requer abrir o Slide Remote Companion n
 O Companion pode ser baixado em:
 
 ```text
-https://github.com/josevfn/slide-remote/releases/latest
+https://github.com/josevfn/TAPSLIDE/releases/latest
 ```
 
 ### Modo demonstração
