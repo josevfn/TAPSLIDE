@@ -34,7 +34,7 @@ import com.slideremote.android.ui.components.PrimaryActionButton
 fun WifiPairingScreen(
     onBack: () -> Unit,
     onScanQr: () -> Unit,
-    onConnect: () -> Unit,
+    onConnected: () -> Unit,
     viewModel: ConnectionViewModel = viewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -80,10 +80,18 @@ fun WifiPairingScreen(
             )
 
             PrimaryActionButton(
-                text = "Conectar manualmente",
-                onClick = onConnect,
-                enabled = state.canConnect
+                text = if (state.connecting) "Conectando..." else "Conectar manualmente",
+                onClick = { viewModel.connectManual(onConnected) },
+                enabled = state.canConnect && !state.connecting
             )
+
+            state.errorMessage?.let { error ->
+                Text(
+                    text = "Nao foi possivel conectar: $error",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.error
+                )
+            }
 
             OutlinedButton(
                 onClick = viewModel::toggleHotspotInstructions,

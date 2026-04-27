@@ -18,10 +18,15 @@
 
 ## Fase 3
 
-- Integração Android + Companion.
+- Integracao Android + Companion.
 - Pareamento por QR Code e manual.
 - Heartbeat.
 - Reconexão.
+
+## Fase 3.1
+
+- Controle de mouse pelo celular.
+- Clique esquerdo, direito, duplo clique e rolagem.
 
 ## Fase 4
 
@@ -31,4 +36,3 @@
 ## Fase 5
 
 - Bluetooth direto quando suportado.
-

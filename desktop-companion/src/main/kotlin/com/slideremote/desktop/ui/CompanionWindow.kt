@@ -1,6 +1,7 @@
 package com.slideremote.desktop.ui
 
 import com.slideremote.desktop.input.KeyboardController
+import com.slideremote.desktop.input.MouseController
 import com.slideremote.desktop.protocol.PairingQrPayload
 import com.slideremote.desktop.protocol.Protocol
 import com.slideremote.desktop.qr.QrCodeGenerator
@@ -42,6 +43,7 @@ class CompanionWindow : WifiWebSocketServer.Listener {
     private val sessionTokenManager = SessionTokenManager()
     private val pairingServer = PairingServer(pairingCodeManager, sessionTokenManager)
     private val keyboardController = KeyboardController()
+    private val mouseController = MouseController()
     private val qrCodeGenerator = QrCodeGenerator()
 
     private val port = Protocol.DEFAULT_PORT
@@ -193,6 +195,7 @@ class CompanionWindow : WifiWebSocketServer.Listener {
             pairingServer = pairingServer,
             sessionTokenManager = sessionTokenManager,
             keyboardController = keyboardController,
+            mouseController = mouseController,
             listener = this
         )
     }
@@ -261,4 +264,3 @@ class CompanionWindow : WifiWebSocketServer.Listener {
         }.getOrNull() ?: "127.0.0.1"
     }
 }
-

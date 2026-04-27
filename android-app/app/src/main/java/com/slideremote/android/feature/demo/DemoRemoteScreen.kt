@@ -16,8 +16,10 @@ fun DemoRemoteScreen(
         state = state,
         onBack = onBack,
         onCommand = viewModel::onCommand,
+        onMouseMove = viewModel::onMouseMove,
+        onMouseAction = viewModel::onMouseAction,
+        onMouseScroll = viewModel::onMouseScroll,
         onPauseTimer = viewModel::pauseTimer,
         onResetTimer = viewModel::resetTimer
     )
 }
-

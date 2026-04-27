@@ -55,19 +55,19 @@ fun BluetoothIntroScreen(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Controle sem Companion",
+                text = "Bluetooth direto e experimental",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 16.dp)
             )
             Text(
-                text = "Quando o aparelho oferece suporte, o celular pode ser reconhecido como apresentador Bluetooth pelo computador.",
+                text = "Seu celular pode ter Bluetooth e ainda assim nao permitir que um app funcione como teclado ou apresentador Bluetooth. No Android, esse modo depende de suporte HID liberado pelo sistema/fabricante.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)
             )
             PrimaryActionButton(
-                text = "Verificar suporte",
+                text = "Entendi",
                 onClick = onUnsupported,
                 icon = Icons.Default.Bluetooth,
                 modifier = Modifier.padding(top = 28.dp)

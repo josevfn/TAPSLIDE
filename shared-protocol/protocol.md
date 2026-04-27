@@ -57,6 +57,31 @@ Versão atual: `1`.
 }
 ```
 
+## Mensagem de mouse
+
+```json
+{
+  "type": "mouse",
+  "version": 1,
+  "sessionId": "uuid-da-sessao",
+  "action": "MOVE",
+  "deltaX": 12,
+  "deltaY": -4,
+  "scrollY": 0,
+  "timestamp": 1710000000000
+}
+```
+
+## Acoes de mouse
+
+```text
+MOVE
+LEFT_CLICK
+RIGHT_CLICK
+DOUBLE_CLICK
+SCROLL
+```
+
 ## Comandos
 
 ```text
@@ -83,4 +108,3 @@ PONG
   "pairingCode": "482913"
 }
 ```
-

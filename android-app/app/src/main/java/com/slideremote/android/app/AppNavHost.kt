@@ -61,13 +61,14 @@ fun AppNavHost(navController: NavHostController = rememberNavController()) {
             WifiPairingScreen(
                 onBack = navController::popBackStack,
                 onScanQr = { navController.navigateSingleTop(Routes.QR_SCAN) },
-                onConnect = { navController.navigateSingleTop(Routes.REMOTE) }
+                onConnected = { navController.navigateSingleTop(Routes.REMOTE) }
             )
         }
         composable(Routes.QR_SCAN) {
             QrScanScreen(
                 onBack = navController::popBackStack,
-                onUseManual = { navController.popBackStack(Routes.WIFI_PAIRING, inclusive = false) }
+                onUseManual = { navController.popBackStack(Routes.WIFI_PAIRING, inclusive = false) },
+                onConnected = { navController.navigateSingleTop(Routes.REMOTE) }
             )
         }
         composable(Routes.REMOTE) {
@@ -84,4 +85,3 @@ private fun NavHostController.navigateSingleTop(route: String) {
         launchSingleTop = true
     }
 }
-

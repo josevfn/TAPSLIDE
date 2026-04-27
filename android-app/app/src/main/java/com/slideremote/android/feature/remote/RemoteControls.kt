@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.slideremote.android.core.model.MouseAction
 import com.slideremote.android.core.model.RemoteCommand
 import com.slideremote.android.ui.components.SlideIconActionButton
 
@@ -26,6 +27,9 @@ fun RemoteControls(
     state: RemoteControlState,
     onBack: () -> Unit,
     onCommand: (RemoteCommand) -> Unit,
+    onMouseMove: (Int, Int) -> Unit,
+    onMouseAction: (MouseAction) -> Unit,
+    onMouseScroll: (Int) -> Unit,
     onPauseTimer: () -> Unit,
     onResetTimer: () -> Unit,
     modifier: Modifier = Modifier
@@ -40,16 +44,31 @@ fun RemoteControls(
 
         BoxWithConstraints(modifier = Modifier.weight(1f)) {
             if (maxWidth > maxHeight) {
-                LandscapeControls(onCommand = onCommand)
+                LandscapeControls(
+                    onCommand = onCommand,
+                    onMouseMove = onMouseMove,
+                    onMouseAction = onMouseAction,
+                    onMouseScroll = onMouseScroll
+                )
             } else {
-                PortraitControls(onCommand = onCommand)
+                PortraitControls(
+                    onCommand = onCommand,
+                    onMouseMove = onMouseMove,
+                    onMouseAction = onMouseAction,
+                    onMouseScroll = onMouseScroll
+                )
             }
         }
     }
 }
 
 @Composable
-private fun PortraitControls(onCommand: (RemoteCommand) -> Unit) {
+private fun PortraitControls(
+    onCommand: (RemoteCommand) -> Unit,
+    onMouseMove: (Int, Int) -> Unit,
+    onMouseAction: (MouseAction) -> Unit,
+    onMouseScroll: (Int) -> Unit
+) {
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -64,44 +83,66 @@ private fun PortraitControls(onCommand: (RemoteCommand) -> Unit) {
             label = "AVANCAR",
             command = RemoteCommand.NEXT_SLIDE,
             onCommand = onCommand,
+            modifier = Modifier.height(154.dp),
+            prominent = true
+        )
+        MousePad(
+            onMouseMove = onMouseMove,
+            onMouseAction = onMouseAction,
+            onScroll = onMouseScroll,
             modifier = Modifier
                 .weight(1f)
-                .heightIn(min = 190.dp),
-            prominent = true
+                .heightIn(min = 210.dp)
         )
         SecondaryActions(onCommand = onCommand)
     }
 }
 
 @Composable
-private fun LandscapeControls(onCommand: (RemoteCommand) -> Unit) {
-    Column(
+private fun LandscapeControls(
+    onCommand: (RemoteCommand) -> Unit,
+    onMouseMove: (Int, Int) -> Unit,
+    onMouseAction: (MouseAction) -> Unit,
+    onMouseScroll: (Int) -> Unit
+) {
+    Row(
         modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Row(
-            modifier = Modifier.weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        Column(
+            modifier = Modifier.weight(1.25f),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            RemoteButton(
-                label = "VOLTAR",
-                command = RemoteCommand.PREVIOUS_SLIDE,
-                onCommand = onCommand,
-                modifier = Modifier
-                    .weight(1f)
-                    .heightIn(min = 140.dp)
-            )
-            RemoteButton(
-                label = "AVANCAR",
-                command = RemoteCommand.NEXT_SLIDE,
-                onCommand = onCommand,
-                modifier = Modifier
-                    .weight(1.25f)
-                    .heightIn(min = 140.dp),
-                prominent = true
-            )
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                RemoteButton(
+                    label = "VOLTAR",
+                    command = RemoteCommand.PREVIOUS_SLIDE,
+                    onCommand = onCommand,
+                    modifier = Modifier
+                        .weight(1f)
+                        .heightIn(min = 120.dp)
+                )
+                RemoteButton(
+                    label = "AVANCAR",
+                    command = RemoteCommand.NEXT_SLIDE,
+                    onCommand = onCommand,
+                    modifier = Modifier
+                        .weight(1.25f)
+                        .heightIn(min = 120.dp),
+                    prominent = true
+                )
+            }
+            SecondaryActions(onCommand = onCommand)
         }
-        SecondaryActions(onCommand = onCommand)
+        MousePad(
+            onMouseMove = onMouseMove,
+            onMouseAction = onMouseAction,
+            onScroll = onMouseScroll,
+            modifier = Modifier.weight(1f)
+        )
     }
 }
 
@@ -140,4 +181,3 @@ private fun SecondaryActions(onCommand: (RemoteCommand) -> Unit) {
         )
     }
 }
-

@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.slideremote.android.core.model.MouseAction
 import com.slideremote.android.core.model.RemoteCommand
 import com.slideremote.android.core.wakelock.KeepScreenOnController
 import com.slideremote.android.ui.components.PrimaryActionButton
@@ -42,6 +43,9 @@ fun RemoteScreen(
         state = state,
         onBack = onBack,
         onCommand = viewModel::onCommand,
+        onMouseMove = viewModel::onMouseMove,
+        onMouseAction = viewModel::onMouseAction,
+        onMouseScroll = viewModel::onMouseScroll,
         onPauseTimer = viewModel::pauseTimer,
         onResetTimer = viewModel::resetTimer
     )
@@ -52,6 +56,9 @@ fun RemoteScreenContent(
     state: RemoteControlState,
     onBack: () -> Unit,
     onCommand: (RemoteCommand) -> Unit,
+    onMouseMove: (Int, Int) -> Unit,
+    onMouseAction: (MouseAction) -> Unit,
+    onMouseScroll: (Int) -> Unit,
     onPauseTimer: () -> Unit,
     onResetTimer: () -> Unit
 ) {
@@ -82,6 +89,9 @@ fun RemoteScreenContent(
             state = state,
             onBack = onBack,
             onCommand = ::send,
+            onMouseMove = onMouseMove,
+            onMouseAction = onMouseAction,
+            onMouseScroll = onMouseScroll,
             onPauseTimer = onPauseTimer,
             onResetTimer = onResetTimer
         )

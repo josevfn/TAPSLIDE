@@ -23,3 +23,10 @@ data class PairingQrPayload(
     val pairingCode: String
 )
 
+data class PairingResponse(
+    val accepted: Boolean,
+    val sessionId: String? = null,
+    val computerName: String? = null,
+    val reason: String? = null
+)
+

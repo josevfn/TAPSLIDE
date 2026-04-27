@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$version = if ($args.Count -gt 0) { $args[0] } else { "v1.0.0" }
+$version = if ($args.Count -gt 0) { $args[0] } else { "v1.0.1" }
 
 @"
 # Slide Remote $version
@@ -17,4 +17,3 @@ $version = if ($args.Count -gt 0) { $args[0] } else { "v1.0.0" }
 
 - Pacote Windows: SlideRemoteCompanion-Windows-$version.zip
 "@
-

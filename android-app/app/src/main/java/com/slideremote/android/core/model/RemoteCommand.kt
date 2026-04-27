@@ -12,3 +12,11 @@ enum class RemoteCommand(val displayName: String) {
     PONG("Pong")
 }
 
+enum class MouseAction {
+    MOVE,
+    LEFT_CLICK,
+    RIGHT_CLICK,
+    DOUBLE_CLICK,
+    SCROLL
+}
+

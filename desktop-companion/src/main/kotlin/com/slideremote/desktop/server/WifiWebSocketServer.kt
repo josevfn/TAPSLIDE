@@ -1,9 +1,12 @@
 package com.slideremote.desktop.server
 
 import com.slideremote.desktop.input.KeyboardController
+import com.slideremote.desktop.input.MouseController
 import com.slideremote.desktop.protocol.CommandAckMessage
 import com.slideremote.desktop.protocol.ErrorMessage
 import com.slideremote.desktop.protocol.IncomingEnvelope
+import com.slideremote.desktop.protocol.MouseAckMessage
+import com.slideremote.desktop.protocol.MouseAction
 import com.slideremote.desktop.protocol.PongMessage
 import com.slideremote.desktop.protocol.Protocol
 import com.slideremote.desktop.protocol.RemoteCommand
@@ -27,6 +30,7 @@ class WifiWebSocketServer(
     private val pairingServer: PairingServer,
     private val sessionTokenManager: SessionTokenManager,
     private val keyboardController: KeyboardController,
+    private val mouseController: MouseController,
     private val listener: Listener
 ) {
     private val json = Json {
@@ -95,6 +99,7 @@ class WifiWebSocketServer(
         return when (envelope.type) {
             "pairing_request" -> handlePairing(envelope)
             "command" -> handleCommand(envelope)
+            "mouse" -> handleMouse(envelope)
             "heartbeat", "ping" -> json.encodeToString(PongMessage(timestamp = System.currentTimeMillis()))
             else -> json.encodeToString(ErrorMessage(reason = "UNKNOWN_TYPE"))
         }
@@ -139,6 +144,37 @@ class WifiWebSocketServer(
         } else {
             listener.onLog("Falha ao executar ${command.name}: ${result.exceptionOrNull()?.message}")
             json.encodeToString(ErrorMessage(reason = "KEYBOARD_ERROR"))
+        }
+    }
+
+    private fun handleMouse(envelope: IncomingEnvelope): String {
+        if (!sessionTokenManager.validate(envelope.sessionId)) {
+            listener.onLog("Mouse recusado: sessao invalida.")
+            return json.encodeToString(ErrorMessage(reason = "INVALID_SESSION"))
+        }
+
+        val action = try {
+            MouseAction.valueOf(envelope.action.orEmpty())
+        } catch (_: IllegalArgumentException) {
+            return json.encodeToString(ErrorMessage(reason = "UNKNOWN_MOUSE_ACTION"))
+        }
+
+        val result = mouseController.execute(
+            action = action,
+            deltaX = envelope.deltaX,
+            deltaY = envelope.deltaY,
+            scrollY = envelope.scrollY
+        )
+
+        return if (result.isSuccess) {
+            val timestamp = System.currentTimeMillis()
+            if (action != MouseAction.MOVE) {
+                listener.onCommand("MOUSE_${action.name}", timestamp)
+            }
+            json.encodeToString(MouseAckMessage(action = action.name, timestamp = timestamp))
+        } else {
+            listener.onLog("Falha ao executar mouse ${action.name}: ${result.exceptionOrNull()?.message}")
+            json.encodeToString(ErrorMessage(reason = "MOUSE_ERROR"))
         }
     }
 

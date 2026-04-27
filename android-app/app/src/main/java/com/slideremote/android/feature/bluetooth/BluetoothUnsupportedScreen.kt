@@ -55,13 +55,13 @@ fun BluetoothUnsupportedScreen(
                 tint = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Este aparelho nao oferece suporte ao modo Bluetooth direto.",
+                text = "Bluetooth direto indisponivel neste app",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.padding(top = 16.dp)
             )
             Text(
-                text = "Voce ainda pode usar o modo Wi-Fi/Hotspot com Companion.",
+                text = "O Bluetooth do celular funciona, mas o modo apresentador/teclado Bluetooth exige suporte HID que normalmente nao fica disponivel para apps comuns. Use Wi-Fi/Hotspot com Companion para controlar os slides e o mouse.",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp)

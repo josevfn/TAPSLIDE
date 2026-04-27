@@ -3,7 +3,9 @@ package com.slideremote.android.feature.remote
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.slideremote.android.core.model.ConnectionStatus
+import com.slideremote.android.core.model.MouseAction
 import com.slideremote.android.core.model.RemoteCommand
+import com.slideremote.android.core.transport.RemoteSessionManager
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,6 +29,22 @@ open class RemoteViewModel(
     )
     val state: StateFlow<RemoteControlState> = mutableState
 
+    init {
+        if (mode == RemoteScreenMode.Live) {
+            viewModelScope.launch {
+                RemoteSessionManager.state.collect { session ->
+                    mutableState.update {
+                        it.copy(
+                            connectionName = session.computerName,
+                            connectionStatus = session.status,
+                            transportLabel = session.host?.let { host -> "Wi-Fi $host" } ?: "Wi-Fi"
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun onCommand(command: RemoteCommand) {
         if (command == RemoteCommand.START_PRESENTATION) {
             startTimer()
@@ -35,14 +53,62 @@ open class RemoteViewModel(
             pauseTimer()
         }
 
-        val log = when (mode) {
-            RemoteScreenMode.Live -> "Comando preparado: ${command.name}"
-            RemoteScreenMode.Demo -> "Comando simulado: ${command.name}"
+        val result = when (mode) {
+            RemoteScreenMode.Live -> RemoteSessionManager.sendCommand(command)
+            RemoteScreenMode.Demo -> Result.success(Unit)
+        }
+
+        val log = when {
+            mode == RemoteScreenMode.Demo -> "Comando simulado: ${command.name}"
+            result.isSuccess -> "Comando enviado: ${command.name}"
+            else -> "Falha ao enviar ${command.name}: ${result.exceptionOrNull()?.message}"
         }
 
         mutableState.update {
             it.copy(
                 lastCommand = command.name,
+                logs = (listOf(log) + it.logs).take(6)
+            )
+        }
+    }
+
+    fun onMouseMove(deltaX: Int, deltaY: Int) {
+        if (mode == RemoteScreenMode.Live) {
+            RemoteSessionManager.sendMouse(MouseAction.MOVE, deltaX = deltaX, deltaY = deltaY)
+        }
+    }
+
+    fun onMouseAction(action: MouseAction) {
+        val result = when (mode) {
+            RemoteScreenMode.Live -> RemoteSessionManager.sendMouse(action)
+            RemoteScreenMode.Demo -> Result.success(Unit)
+        }
+        val log = when {
+            mode == RemoteScreenMode.Demo -> "Mouse simulado: ${action.name}"
+            result.isSuccess -> "Mouse enviado: ${action.name}"
+            else -> "Falha no mouse ${action.name}: ${result.exceptionOrNull()?.message}"
+        }
+        mutableState.update {
+            it.copy(
+                lastCommand = "MOUSE_${action.name}",
+                logs = (listOf(log) + it.logs).take(6)
+            )
+        }
+    }
+
+    fun onMouseScroll(scrollY: Int) {
+        val result = when (mode) {
+            RemoteScreenMode.Live -> RemoteSessionManager.sendMouse(MouseAction.SCROLL, scrollY = scrollY)
+            RemoteScreenMode.Demo -> Result.success(Unit)
+        }
+        val log = when {
+            mode == RemoteScreenMode.Demo -> "Rolagem simulada: $scrollY"
+            result.isSuccess -> "Rolagem enviada: $scrollY"
+            else -> "Falha na rolagem: ${result.exceptionOrNull()?.message}"
+        }
+        mutableState.update {
+            it.copy(
+                lastCommand = "MOUSE_SCROLL",
                 logs = (listOf(log) + it.logs).take(6)
             )
         }
@@ -100,4 +166,3 @@ data class RemoteControlState(
     val vibrateOnTap: Boolean = true,
     val gesturesEnabled: Boolean = true
 )
-

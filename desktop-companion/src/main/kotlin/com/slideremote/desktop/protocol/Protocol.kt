@@ -50,6 +50,14 @@ data class CommandAckMessage(
 ) : ServerMessage()
 
 @Serializable
+data class MouseAckMessage(
+    override val type: String = "mouse_ack",
+    override val version: Int = Protocol.VERSION,
+    val action: String,
+    val timestamp: Long
+) : ServerMessage()
+
+@Serializable
 data class ErrorMessage(
     override val type: String = "error",
     override val version: Int = Protocol.VERSION,
@@ -71,6 +79,10 @@ data class IncomingEnvelope(
     val deviceName: String? = null,
     val pairingCode: String? = null,
     val command: String? = null,
+    val action: String? = null,
+    val deltaX: Int = 0,
+    val deltaY: Int = 0,
+    val scrollY: Int = 0,
     val timestamp: Long? = null
 )
 
@@ -84,5 +96,13 @@ enum class RemoteCommand {
     HEARTBEAT,
     PING,
     PONG
+}
+
+enum class MouseAction {
+    MOVE,
+    LEFT_CLICK,
+    RIGHT_CLICK,
+    DOUBLE_CLICK,
+    SCROLL
 }
 
