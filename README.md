@@ -12,10 +12,10 @@ Funciona sem instalar nada no computador quando o aparelho Android oferece supor
 
 Modo mais estável para apresentações. Requer abrir o Slide Remote Companion no computador.
 
-O Companion pode ser baixado em:
+O Companion pode ser baixado diretamente em:
 
 ```text
-https://github.com/josevfn/TAPSLIDE/releases/latest
+https://github.com/josevfn/TAPSLIDE/releases/latest/download/SlideRemoteCompanion-Windows-v1.0.0.zip
 ```
 
 ### Modo demonstração
