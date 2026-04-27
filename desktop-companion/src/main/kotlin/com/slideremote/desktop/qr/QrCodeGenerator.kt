@@ -7,7 +7,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 import java.awt.image.BufferedImage
 
 class QrCodeGenerator {
-    fun generate(content: String, size: Int = 240): BufferedImage {
+    fun generate(content: String, size: Int = 320): BufferedImage {
         val hints = mapOf(
             EncodeHintType.CHARACTER_SET to "UTF-8",
             EncodeHintType.MARGIN to 1
@@ -16,4 +16,3 @@ class QrCodeGenerator {
         return MatrixToImageWriter.toBufferedImage(matrix)
     }
 }
-

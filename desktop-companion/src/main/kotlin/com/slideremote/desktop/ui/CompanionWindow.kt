@@ -67,6 +67,9 @@ class CompanionWindow : WifiWebSocketServer.Listener {
     private val disconnectButton = JButton("Desconectar celular")
 
     private val expirationTimer = Timer(1_000) {
+        if (pairingCodeManager.isExpired() && sessionTokenManager.current() == null) {
+            generateNewPairingCode("Codigo expirado. Novo codigo gerado automaticamente.")
+        }
         expiresLabel.text = "Expira em: ${pairingCodeManager.expiresInSeconds()}s"
     }
 
@@ -95,6 +98,10 @@ class CompanionWindow : WifiWebSocketServer.Listener {
         startButton.addActionListener {
             localIp = findLocalIpAddress()
             ipLabel.text = "IP local: $localIp"
+            logCurrentIp()
+            if (pairingCodeManager.isExpired()) {
+                generateNewPairingCode("Codigo expirado. Novo codigo gerado ao iniciar servidor.")
+            }
             if (!server.isRunning()) {
                 server.start()
             }
@@ -106,12 +113,7 @@ class CompanionWindow : WifiWebSocketServer.Listener {
             updateButtons()
         }
         newCodeButton.addActionListener {
-            pairingCodeManager.generateNewCode()
-            sessionTokenManager.disconnect()
-            codeLabel.text = "Codigo: ${pairingCodeManager.currentCode}"
-            deviceLabel.text = "Dispositivo conectado: nenhum"
-            appendLog("Novo codigo de pareamento gerado.")
-            updateQrCode()
+            generateNewPairingCode("Novo codigo de pareamento gerado.")
         }
         disconnectButton.addActionListener {
             sessionTokenManager.disconnect()
@@ -216,6 +218,16 @@ class CompanionWindow : WifiWebSocketServer.Listener {
         qrLabel.icon = ImageIcon(image)
     }
 
+    private fun generateNewPairingCode(logMessage: String) {
+        pairingCodeManager.generateNewCode()
+        sessionTokenManager.disconnect()
+        codeLabel.text = "Codigo: ${pairingCodeManager.currentCode}"
+        expiresLabel.text = "Expira em: ${pairingCodeManager.expiresInSeconds()}s"
+        deviceLabel.text = "Dispositivo conectado: nenhum"
+        appendLog(logMessage)
+        updateQrCode()
+    }
+
     override fun onStatusChanged(status: String) = onUi {
         statusLabel.text = "Status: $status"
     }
@@ -253,14 +265,89 @@ class CompanionWindow : WifiWebSocketServer.Listener {
     }
 
     private fun findLocalIpAddress(): String {
-        return runCatching {
-            NetworkInterface.getNetworkInterfaces()
-                .asSequence()
-                .filter { it.isUp && !it.isLoopback && !it.isVirtual }
-                .flatMap { it.inetAddresses.asSequence() }
-                .filterIsInstance<Inet4Address>()
-                .firstOrNull { !it.isLoopbackAddress }
-                ?.hostAddress
-        }.getOrNull() ?: "127.0.0.1"
+        val candidates = findIpCandidates()
+        val selected = candidates.firstOrNull { it.isPrivateLan }
+            ?: candidates.firstOrNull()
+
+        if (selected == null) {
+            return "127.0.0.1"
+        }
+
+        return selected.address
     }
+
+    private fun logCurrentIp() {
+        val selected = findIpCandidates().firstOrNull { it.address == localIp }
+        if (selected == null || localIp == "127.0.0.1") {
+            appendLog("Nenhum IP de rede local foi detectado. Verifique se o notebook esta no mesmo Wi-Fi/hotspot do celular.")
+            return
+        }
+        if (!selected.isPrivateLan) {
+            appendLog("Atencao: o IP detectado nao parece ser de rede local: $localIp. Se nao conectar, use no app Android o IP 192.168.x.x, 10.x.x.x ou 172.16-31.x.x do notebook.")
+        } else {
+            appendLog("IP local selecionado: $localIp (${selected.interfaceName}).")
+        }
+    }
+
+    private fun findIpCandidates(): List<IpCandidate> {
+        return runCatching {
+            val raw = NetworkInterface.getNetworkInterfaces()
+                .asSequence()
+                .filter { it.isUp && !it.isLoopback }
+                .flatMap { networkInterface ->
+                    networkInterface.inetAddresses
+                        .asSequence()
+                        .filterIsInstance<Inet4Address>()
+                        .filter { !it.isLoopbackAddress }
+                        .map {
+                            IpCandidate(
+                                address = it.hostAddress,
+                                interfaceName = networkInterface.displayName ?: networkInterface.name,
+                                isPrivateLan = it.isPrivateLan(),
+                                isLikelyVirtual = networkInterface.isVirtual || networkInterface.looksVirtual()
+                            )
+                        }
+                }
+                .sortedWith(
+                    compareByDescending<IpCandidate> { it.isPrivateLan }
+                        .thenBy { it.isLikelyVirtual }
+                        .thenBy { it.address }
+                )
+                .toList()
+            raw
+        }.getOrDefault(emptyList())
+    }
+}
+
+private data class IpCandidate(
+    val address: String,
+    val interfaceName: String,
+    val isPrivateLan: Boolean,
+    val isLikelyVirtual: Boolean
+)
+
+private fun Inet4Address.isPrivateLan(): Boolean {
+    val parts = hostAddress.split(".").mapNotNull { it.toIntOrNull() }
+    if (parts.size != 4) return false
+    return parts[0] == 10 ||
+        (parts[0] == 172 && parts[1] in 16..31) ||
+        (parts[0] == 192 && parts[1] == 168)
+}
+
+private fun NetworkInterface.looksVirtual(): Boolean {
+    val text = "${name} ${displayName}".lowercase()
+    return listOf(
+        "virtual",
+        "vmware",
+        "virtualbox",
+        "hyper-v",
+        "wsl",
+        "docker",
+        "vpn",
+        "tap",
+        "tailscale",
+        "zerotier",
+        "loopback",
+        "teredo"
+    ).any { text.contains(it) }
 }

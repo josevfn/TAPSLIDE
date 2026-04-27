@@ -85,6 +85,12 @@ fun QrScanScreen(
         }
     }
 
+    LaunchedEffect(state.errorMessage) {
+        if (state.errorMessage != null) {
+            scanned = false
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -277,8 +283,13 @@ private class QrAnalyzer(
 
         try {
             val data = extractYPlane(plane, image.width, image.height)
+            val clockwise = rotateYPlaneClockwise(data, image.width, image.height)
+            val counterClockwise = rotateYPlaneCounterClockwise(data, image.width, image.height)
+            val upsideDown = rotateYPlane180(data, image.width, image.height)
             val result = decode(data, image.width, image.height)
-                ?: decode(rotateYPlaneClockwise(data, image.width, image.height), image.height, image.width)
+                ?: decode(clockwise, image.height, image.width)
+                ?: decode(counterClockwise, image.height, image.width)
+                ?: decode(upsideDown, image.width, image.height)
             if (result != null) {
                 onQrText(result.text)
             }
@@ -335,6 +346,28 @@ private class QrAnalyzer(
         var index = 0
         for (x in 0 until width) {
             for (y in height - 1 downTo 0) {
+                rotated[index++] = data[y * width + x]
+            }
+        }
+        return rotated
+    }
+
+    private fun rotateYPlaneCounterClockwise(data: ByteArray, width: Int, height: Int): ByteArray {
+        val rotated = ByteArray(data.size)
+        var index = 0
+        for (x in width - 1 downTo 0) {
+            for (y in 0 until height) {
+                rotated[index++] = data[y * width + x]
+            }
+        }
+        return rotated
+    }
+
+    private fun rotateYPlane180(data: ByteArray, width: Int, height: Int): ByteArray {
+        val rotated = ByteArray(data.size)
+        var index = 0
+        for (y in height - 1 downTo 0) {
+            for (x in width - 1 downTo 0) {
                 rotated[index++] = data[y * width + x]
             }
         }

@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "com.slideremote"
-version = "1.0.1"
+version = "1.0.2"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_17

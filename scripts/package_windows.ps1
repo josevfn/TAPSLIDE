@@ -1,7 +1,7 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$version = "1.0.1"
+$version = "1.0.2"
 $root = Resolve-Path "$PSScriptRoot\.."
 $dist = Join-Path $root "dist"
 $package = Join-Path $dist "SlideRemoteCompanion-Windows-v$version.zip"

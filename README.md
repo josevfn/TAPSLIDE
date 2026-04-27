@@ -15,7 +15,7 @@ Modo mais estável para apresentações. Requer abrir o Slide Remote Companion n
 O Companion pode ser baixado diretamente em:
 
 ```text
-https://github.com/josevfn/TAPSLIDE/releases/latest/download/SlideRemoteCompanion-Windows-v1.0.1.zip
+https://github.com/josevfn/TAPSLIDE/releases/latest/download/SlideRemoteCompanion-Windows-v1.0.2.zip
 ```
 
 ### Modo demonstração
@@ -68,14 +68,14 @@ cd desktop-companion
 O arquivo recomendado para o MVP é:
 
 ```text
-SlideRemoteCompanion-Windows-v1.0.1.zip
+SlideRemoteCompanion-Windows-v1.0.2.zip
 ```
 
 Fluxo resumido:
 
 1. Gerar build do Companion.
 2. Compactar o pacote Windows.
-3. Criar a tag `v1.0.1`.
+3. Criar a tag `v1.0.2`.
 4. Criar uma release no GitHub.
 5. Anexar o arquivo `.zip`.
 

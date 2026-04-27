@@ -5,14 +5,14 @@ O Companion desktop será publicado em GitHub Releases.
 URL usada pelo app Android:
 
 ```text
-https://github.com/josevfn/TAPSLIDE/releases/latest/download/SlideRemoteCompanion-Windows-v1.0.1.zip
+https://github.com/josevfn/TAPSLIDE/releases/latest/download/SlideRemoteCompanion-Windows-v1.0.2.zip
 ```
 
 ## Como publicar uma versão
 
 1. Gerar build do Companion.
-2. Compactar como `SlideRemoteCompanion-Windows-v1.0.1.zip`.
-3. Criar tag `v1.0.1`.
+2. Compactar como `SlideRemoteCompanion-Windows-v1.0.2.zip`.
+3. Criar tag `v1.0.2`.
 4. Criar release no GitHub.
 5. Anexar o arquivo `.zip`.
 6. Atualizar notas da versão.
@@ -26,7 +26,7 @@ SlideRemoteCompanion-Windows-vMAJOR.MINOR.PATCH.zip
 Exemplo:
 
 ```text
-SlideRemoteCompanion-Windows-v1.0.1.zip
+SlideRemoteCompanion-Windows-v1.0.2.zip
 ```
 
 ## Futuro
