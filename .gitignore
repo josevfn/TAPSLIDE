@@ -1,4 +1,5 @@
 .gradle/
+.kotlin/
 build/
 local.properties
 captures/
@@ -12,4 +13,6 @@ out/
 dist/
 *.zip
 *.exe
-
+android-app/keystore.properties
+android-app/*.jks
+android-app/*.keystore
